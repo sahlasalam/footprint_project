@@ -58,6 +58,12 @@
                 padding-left: 20px;
                 border: 0.5px rgba(202, 201, 201, 0.986) solid;
             }
+            .errormsg{
+                color: red;
+                font-size: 12px;
+                padding-left: 20px;
+                line-height: 0px;
+            }
             .login-field{
                 background-color: rgb(114, 194, 114);
                 color: white;
@@ -90,7 +96,7 @@
         width: 100%;
         left: 0%;
         // height: 500px;
-        top:690px;
+        top:735px;
     }
     // @media screen and (max-width :1088px) {
     //     height: 100%;

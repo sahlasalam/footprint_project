@@ -2,32 +2,37 @@ import React, { useState } from 'react'
 import {Link} from 'react-router-dom'
 import *as infoServices from '../services/auth'
 import Joi from 'joi-browser';
+import {useNavigate} from 'react-router-dom'
 
 function Register() {
-    const images = require.context("../assets/images", true);
+    const images = require.context("../assets/images", true)
+    
+    const navigate = useNavigate();
 
     const [details, setDetails] = useState({
         email : "",
         password : "",
-        conformpsw : ""
+        password_confirmation : ""
     })
 
     const [errors, setErrors] = useState({})
+    const [message, setMessage] = useState("")
 
     const schema = {
         email : Joi.string().email().required(),
         password : Joi.string().min(8).required(),
-        conformpsw : Joi.string().min(8).required(),
+        // password_confirmation : Joi.string().required().valid(Joi.ref('password'))
+        password_confirmation : Joi.any().valid(Joi.ref("password")).required().options({ language: { any: { allowOnly: 'must match password' } } })
     }
 
     const validateProperty=(e)=>{
         let {name, value} = e.target;
         const obj={[name] : value};
-        console.log("the obj ------", obj);
+        // console.log("the obj ------", obj);
         const subSchema = {[name] : schema[name]};
-        console.log("the subschema-----", subSchema);
+        // console.log("the subschema-----", subSchema);
         const result = Joi.validate(obj , subSchema);
-        console.log("result----", result);
+        // console.log("result----", result);
         const error = result.error;
         return error? error.details[0].message : null
     }
@@ -37,6 +42,7 @@ function Register() {
         var fieldValue = e.target.value;
         let errorData = {...errors};
         const errorMessage = validateProperty(e);
+        // console.log("error----", errorMessage);
         if(errorMessage){
             errorData[fieldName]= errorMessage;
         }
@@ -44,7 +50,7 @@ function Register() {
             delete  errorData[fieldName];
         }
         setErrors(errorData);
-
+        // console.log(errors);
         var prevState = {...details};
         prevState[fieldName] = fieldValue;
         setDetails(prevState)
@@ -53,23 +59,36 @@ function Register() {
 
 
 
-    const saveData= async(e)=>{
+    const saveData= (e)=>{
         e.preventDefault();
         const result = Joi.validate(details, schema);
         const error= result.error;
+        // console.log("error----",result);
         if(!error){
-            await infoServices.saveData(details)
-            return null;
+            return register();
         }
         else{
-            const errorData = {};
+            const errorDatas = {};
             for(let item of error.details){
                 const name= item.path[0];
                 const message = item.message;
-                errorData[name]= message;
+                errorDatas[name]= message;
             }
-            setErrors(errorData);
-            return errorData;
+            setErrors(errorDatas);
+            // console.log(errors);
+            // return errorData;
+        }
+    }
+
+    const register= async()=>{
+        var response = await infoServices.saveDetails(details)
+        if(response.data.status === 1){
+            var reg_user_token = response.data.token;
+            localStorage.setItem("user_token", reg_user_token)
+            navigate('/');
+        }
+        else{
+            setMessage(response.data.message)
         }
     }
 
@@ -80,18 +99,21 @@ function Register() {
             <div className='login-section-1-1'>
                 <div className='login-heading'>
                     <h1>Register</h1>
-                    <p>Our Prices Will Not Be Beat</p>
+                    <p>Our Prices Will Not Be Beat</p> 
                     <p>Already have an account? <Link to='/' className='link'>Login</Link></p>
                 </div>
                 <div className='login-form'>
                         <div>
                             <input type="email" className='form-field' placeholder='Email' name="email" onChange={getData}></input>
+                            <p className='errormsg'>{errors.email}</p>
                         </div>
                         <div>
                             <input  type='password' className='form-field' placeholder='Password' name="password" onChange={getData}></input>
+                            <p className='errormsg'>{errors.password}</p>
                         </div>
                         <div>
-                            <input type="password" className='form-field' placeholder='Conform Password' name="conformpsw" onChange={getData}></input>
+                            <input type="password" className='form-field' placeholder='Conform Password' name="password_confirmation" onChange={getData}></input>
+                            <p className='errormsg'>{errors.password_confirmation}</p>
                         </div>
                         <div className='ul-list'>
                             <ul>
@@ -109,6 +131,7 @@ function Register() {
                             <input type="checkbox" ></input>
                             <label>I’d like to receive Footprint.io emails about new updates</label>
                         </div>
+                        <p className='errormsg'>{message}</p>
                         <div>
                             <button className='form-field login-field' onClick={saveData}>Register Now</button>
                         </div>

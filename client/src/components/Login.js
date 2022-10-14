@@ -1,8 +1,35 @@
-import React from 'react'
+import React, { useState } from 'react'
 import {Link} from 'react-router-dom'
+import *as infoServices from '../services/auth'
 
 function Login() {
     const images = require.context("../assets/images", true);
+
+    const [loginData, setLoginData] = useState({
+        email : "",
+        password : ""
+    })
+
+    const [message, setMessage] = useState("")
+
+    const getData = (e)=>{
+        const name = e.target.name;
+        const value = e.target.value;
+        const prevData = {...loginData};
+        prevData[name]= value;
+        setLoginData(prevData);
+    }
+
+    const loginAccount = async() =>{
+        const result = await infoServices.login(loginData);
+        if(result.data.status === 1){
+            const login_token = result.data.token;
+            localStorage.setItem("user_token", login_token)
+            setMessage("")
+        }else{
+            setMessage(result.data.message)
+        }
+        }
 
 
   return (
@@ -16,13 +43,14 @@ function Login() {
             </div>
             <div className='login-form'>
                 <div>
-                    <input type="email" className='form-field' placeholder='Email'></input>
+                    <input type="email" className='form-field' placeholder='Email' name = "email" onChange={getData}></input>
                 </div>
                 <div>
-                    <input type="passwod" className='form-field' placeholder='Password'></input>
+                    <input type="password" className='form-field' placeholder='Password' name = "password" onChange={getData}></input>
                 </div>
+                <p className='errormsg'>{message}</p>
                 <div>
-                    <button className='form-field login-field'>Login</button>
+                    <button className='form-field login-field' onClick={loginAccount}>Login</button>
                 </div>
             </div>
 
