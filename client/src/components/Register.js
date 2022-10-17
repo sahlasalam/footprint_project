@@ -20,7 +20,8 @@ function Register() {
 
     const schema = {
         email : Joi.string().email().required(),
-        password : Joi.string().min(8).required(),
+        password : Joi.string().min(8).regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/, 
+        'password').required(),
         // password_confirmation : Joi.string().required().valid(Joi.ref('password'))
         password_confirmation : Joi.any().valid(Joi.ref("password")).required().options({ language: { any: { allowOnly: 'must match password' } } })
     }
@@ -85,7 +86,7 @@ function Register() {
         if(response.data.status === 1){
             var reg_user_token = response.data.token;
             localStorage.setItem("user_token", reg_user_token)
-            navigate('/');
+            navigate('/dashboard');
         }
         else{
             setMessage(response.data.message)

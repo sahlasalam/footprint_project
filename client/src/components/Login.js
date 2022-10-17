@@ -1,6 +1,8 @@
 import React, { useState } from 'react'
 import {Link} from 'react-router-dom'
 import *as infoServices from '../services/auth'
+import Joi from 'joi-browser';
+
 
 function Login() {
     const images = require.context("../assets/images", true);
@@ -10,22 +12,73 @@ function Login() {
         password : ""
     })
 
+    const schema={
+        email : Joi.string().email().required(),
+        password : Joi.string().required()
+    }
+
     const [message, setMessage] = useState("")
+    const [errors, setErrors] = useState({})
+
+
+    const validateProperty=(e)=>{
+        let {name, value} = e.target;
+        const obj={[name] : value};
+        // console.log("the obj ------", obj);
+        const subSchema = {[name] : schema[name]};
+        // console.log("the subschema-----", subSchema);
+        const result = Joi.validate(obj , subSchema);
+        // console.log("result----", result);
+        const error = result.error;
+        return error? error.details[0].message : null
+    }
+
 
     const getData = (e)=>{
         const name = e.target.name;
         const value = e.target.value;
+        let errorData = {...errors};
+        const errorMessage = validateProperty(e);
+        // console.log("error----", errorMessage);
+        if(errorMessage){
+            errorData[name]= errorMessage;
+        }
+        else{
+            delete  errorData[name];
+        }
+        setErrors(errorData);
+
         const prevData = {...loginData};
         prevData[name]= value;
         setLoginData(prevData);
     }
 
-    const loginAccount = async() =>{
+    const loginAccount = (e)=>{
+        e.preventDefault();
+        const result = Joi.validate(loginData, schema);
+        const error= result.error;
+        if(!error){
+            return login();
+        }
+        else{
+            const errorDatas = {};
+            for(let item of error.details){
+                const name= item.path[0];
+                const message = item.message;
+                errorDatas[name]= message;
+            }
+            setErrors(errorDatas);
+            // console.log(errors);
+            // return errorData;
+        }
+
+    }
+
+    const login = async() =>{
         const result = await infoServices.login(loginData);
         if(result.data.status === 1){
             const login_token = result.data.token;
             localStorage.setItem("user_token", login_token)
-            setMessage("")
         }else{
             setMessage(result.data.message)
         }
@@ -44,9 +97,11 @@ function Login() {
             <div className='login-form'>
                 <div>
                     <input type="email" className='form-field' placeholder='Email' name = "email" onChange={getData}></input>
+                    <p className='errormsg'>{errors.email}</p>
                 </div>
                 <div>
                     <input type="password" className='form-field' placeholder='Password' name = "password" onChange={getData}></input>
+                    <p className='errormsg'>{errors.password}</p>
                 </div>
                 <p className='errormsg'>{message}</p>
                 <div>
