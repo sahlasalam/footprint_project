@@ -7,11 +7,13 @@ const regRoute = require('./routes/register')
 const loginRoute = require('./routes/login')
 const saveRoute = require('./routes/save')
 const fetchRoute = require('./routes/fetch')
+const passwordchangeRoute = require('./routes/password')
 
 app.use("/", regRoute);
 app.use("/", loginRoute);
 app.use("/", saveRoute);
 app.use("/", fetchRoute);
+app.use('/', passwordchangeRoute);
 
 app.listen(PORT, (error) => {
     if (!error)

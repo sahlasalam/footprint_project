@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from 'react'
 import Joi from 'joi-browser';
 import *as infoServices from '../services/auth'
+import {useNavigate, Link} from 'react-router-dom'
 
 
 function Dashboard() {
     const images = require.context("../assets/images", true)
+
+    const navigate= useNavigate();
 
     const [data, setData] = useState({
         fname : "",
@@ -17,7 +20,6 @@ function Dashboard() {
     })
 
     const [errors, setErrors] = useState({})
-    const [email, setEmail] = useState("")
 
     useEffect(() => {
         fetchData();
@@ -28,7 +30,8 @@ function Dashboard() {
     const fetchData= async ()=>{
         const customertoken = localStorage.getItem("user_token");
         var result = await infoServices.fetchdetails({token : customertoken})
-        setEmail(result.data.email);
+        // console.log(result.data.output);
+        setData(result.data.output)
     }
 
     const schema = {
@@ -87,8 +90,16 @@ function Dashboard() {
     }
 
     const submit = async()=>{
-        await infoServices.submitData(data)
+        var response = await infoServices.submitData(data);
+        setData(response.data.output)
+        // console.log("new values---------",data);
     }
+
+    const logout = () =>{
+        localStorage.removeItem("user_token");
+        navigate('/')
+      }
+  
 
   return (
     <div>
@@ -99,37 +110,38 @@ function Dashboard() {
                     <h1>Dashboard</h1>
                 </div>
                 <div className='login-form'>
-                    <div>
-                        <input type="text" className='form-field' placeholder='First Name' name="fname" onChange={getDetails}></input>
-                        <p className='errormsg'>{errors.fname}</p>
+                    <div className='form-first-field'>
+                        <input type="text" className='form-field-1' placeholder='First Name' name="fname" defaultValue={data.fname} onChange={getDetails}></input>
+                        <input type="text" className='form-field-1' placeholder='Last Name' name="lname" defaultValue={data.lname} onChange={getDetails}></input>
                     </div>
+                    <p className='errormsg'>{errors.fname}</p>
+                    <p className='errormsg'>{errors.lname}</p>
+
                     <div>
-                        <input type="text" className='form-field' placeholder='Last Name' name="lname" onChange={getDetails}></input>
-                        <p className='errormsg'>{errors.lname}</p>
-                    </div>
-                    <div>
-                        <input type="text" className='form-field' placeholder='Email' name="email" defaultValue={email} onChange={getDetails}></input>
+                        <input type="text" className='form-field' placeholder='Email' name="email" defaultValue={data.email} onChange={getDetails}></input>
                         <p className='errormsg'>{errors.email}</p>
                     </div>
                     <div>
-                        <input type="text" className='form-field' placeholder='Address' name="address" onChange={getDetails}></input>
+                        <input type="text" className='form-field' placeholder='Address' name="address" defaultValue={data.address} onChange={getDetails}></input>
                         <p className='errormsg'>{errors.address}</p>
                     </div>
                     <div>
-                        <input type="number" className='form-field' placeholder='Phone Number' name="number" onChange={getDetails}></input>
+                        <input type="number" className='form-field' placeholder='Phone Number' name="number" defaultValue={data.number} onChange={getDetails}></input>
                         <p className='errormsg'>{errors.number}</p>
                     </div>
                     <div>
-                        <input type="text" className='form-field' placeholder='Country' name="country" onChange={getDetails}></input>
+                        <input type="text" className='form-field' placeholder='Country' name="country" defaultValue={data.country} onChange={getDetails}></input>
                         <p className='errormsg'>{errors.country}</p>
                     </div>
                     <div>
-                        <input type="number" className='form-field' placeholder='Pincode' name="pin" onChange={getDetails}></input>
+                        <input type="number" className='form-field' placeholder='Pincode' name="pin" defaultValue={data.pin} onChange={getDetails}></input>
                         <p className='errormsg'>{errors.pin}</p>
                     </div>
-                    <div>
+                    <div className='form-first-field'>
                         <button className='form-field login-field' onClick={saveDetails}>Submit</button>
+                        <button className='form-field login-field' onClick={logout}>Logout</button>
                     </div>
+                    <Link to='/password' className='linktopaswd'>Change Password?</Link>
 
                 </div>
 

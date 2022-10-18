@@ -19,7 +19,7 @@ SECRETE_KEY = "asdfghjklpoiuytree"
  router.post('/register', async(req, res)=>{
    const hashedPassword = bcrypt.hashSync(req.body.password, 10)
    try{
-      User.findOne({email : req.body.email}, async function(err, log){
+      await User.findOne({email : req.body.email}, async function(err, log){
          if(log){
             res.send({status : 0, message : "User already exist..please login"})
          }

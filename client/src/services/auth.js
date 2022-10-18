@@ -9,10 +9,13 @@ export function login(data){
 }
 
 export function submitData(data){
-    console.log(data);
     return axios.post('http://localhost:4000/savedetails',{data:data, token : localStorage.getItem("user_token")})
 }
 
 export function fetchdetails(data){
     return axios.post('http://localhost:4000/fetch',data)
+}
+
+export function changePassword(data){
+    return axios.post('http://localhost:4000/password',{data: data , token : localStorage.getItem("user_token")})
 }

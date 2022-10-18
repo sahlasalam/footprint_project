@@ -8,7 +8,7 @@ const customerSchema = new mongoose.Schema({
     address : {type : String},
     number : {type : Number},
     country : {type : String},
-    pincode : {type : Number} 
+    pin : {type : Number} 
 })
 
 const User = mongoose.model("User", customerSchema)

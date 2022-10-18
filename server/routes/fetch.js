@@ -20,7 +20,17 @@ router.post('/fetch', async(req, res) =>{
         var token = req.body.token;
         jwt.verify(token, SECRETE_KEY, async function(err, decoded){
             if(decoded){
-                res.send({status : 1, email: decoded.email})
+                var data = await User.findOne({_id : decoded.id})
+                var output ={
+                    fname : data.fname,
+                    lname : data.lname,
+                    email : data.email,
+                    address : data.address,
+                    number : data.number,
+                    country : data.country,
+                    pin : data.pin
+                }
+                res.send({status : 1, output : output})
             }
             else{
                 res.send({status: 0})

@@ -50,11 +50,23 @@
             max-width: 420px;
             // height: 500px;
             margin: 0 auto;
+            .form-first-field{
+                display: flex;
+            }
+            .form-field-1{
+                width: 100%;
+                height: 50px;
+                border-radius: 8px;
+                margin: 5px 20px;
+                padding-left: 20px;
+                border: 0.5px rgba(202, 201, 201, 0.986) solid;
+
+            }
             .form-field{
                 width: 85%;
                 height: 50px;
                 border-radius: 8px;
-                margin: 10px 20px;
+                margin: 5px 20px;
                 padding-left: 20px;
                 border: 0.5px rgba(202, 201, 201, 0.986) solid;
             }
@@ -86,6 +98,12 @@
                     font-size: 14px;
                 }
             }
+            .linktopaswd{
+                font-size: 20px;
+                color: black;
+                font-family: 'poppinssemibold';
+                margin : 0 103px;
+            }
         }    
     }
 
@@ -95,7 +113,7 @@
     @media screen and (max-width :991px) {
         width: 100%;
         left: 0%;
-        top:735px;
+        top:740px;
         // height: 500px;
     }
     

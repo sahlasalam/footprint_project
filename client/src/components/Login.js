@@ -2,10 +2,13 @@ import React, { useState } from 'react'
 import {Link} from 'react-router-dom'
 import *as infoServices from '../services/auth'
 import Joi from 'joi-browser';
+import {useNavigate} from 'react-router-dom'
 
 
 function Login() {
     const images = require.context("../assets/images", true);
+
+    const navigate= useNavigate();
 
     const [loginData, setLoginData] = useState({
         email : "",
@@ -79,6 +82,7 @@ function Login() {
         if(result.data.status === 1){
             const login_token = result.data.token;
             localStorage.setItem("user_token", login_token)
+            navigate('/dashboard')
         }else{
             setMessage(result.data.message)
         }
