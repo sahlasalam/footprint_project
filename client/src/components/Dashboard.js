@@ -9,6 +9,8 @@ function Dashboard() {
 
     const navigate= useNavigate();
 
+    const [message, setMessage] = useState("")
+
     const [data, setData] = useState({
         fname : "",
         lname : "",
@@ -39,9 +41,9 @@ function Dashboard() {
         lname : Joi.string().required(),
         email : Joi.string().email().required(),
         address : Joi.string().required(),
-        number : Joi.string().min(10).required(),
+        number : Joi.number().min(10).required(),
         country : Joi.string().required(),
-        pin : Joi.string().max(6).required()
+        pin : Joi.string().min(6).max(6).required()
     }
 
     const validateProperty=(e)=>{
@@ -92,6 +94,7 @@ function Dashboard() {
     const submit = async()=>{
         var response = await infoServices.submitData(data);
         setData(response.data.output)
+        setMessage(response.data.message)
         // console.log("new values---------",data);
     }
 
@@ -134,13 +137,14 @@ function Dashboard() {
                         <p className='errormsg'>{errors.country}</p>
                     </div>
                     <div>
-                        <input type="number" className='form-field' placeholder='Pincode' name="pin" defaultValue={data.pin} onChange={getDetails}></input>
+                        <input type="string" className='form-field' placeholder='Pincode' name="pin" defaultValue={data.pin} onChange={getDetails}></input>
                         <p className='errormsg'>{errors.pin}</p>
                     </div>
                     <div className='form-first-field'>
                         <button className='form-field login-field' onClick={saveDetails}>Submit</button>
                         <button className='form-field login-field' onClick={logout}>Logout</button>
                     </div>
+                    <p>{message}</p>
                     <Link to='/password' className='linktopaswd'>Change Password?</Link>
 
                 </div>
